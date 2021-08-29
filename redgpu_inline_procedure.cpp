@@ -64,12 +64,17 @@ REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedure(RedHandleCalls calls, 
       } else {
         redCreateGpuCode(inlineProcedure->context, inlineProcedure->gpu, inlineProcedure->gpuCodeFragmentHandleName, inlineProcedure->gpuCodeFragmentIrBytesCount, inlineProcedure->gpuCodeFragmentIr, &gpuCodeAndProcedureHandles.gpuCodeFragment, outStatuses, optionalFile, optionalLine, optionalUserData);
         if (gpuCodeAndProcedureHandles.gpuCodeFragment == 0) {
+          redDestroyGpuCode(inlineProcedure->context, inlineProcedure->gpu, gpuCodeAndProcedureHandles.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
           errorCode = -3;
           goto errorExit;
         }
       }
       redCreateProcedure(inlineProcedure->context, inlineProcedure->gpu, inlineProcedure->handleName, 0, inlineProcedure->outputDeclaration, inlineProcedure->procedureParameters, inlineProcedure->gpuCodeVertexMainProcedureName, gpuCodeAndProcedureHandles.gpuCodeVertex, inlineProcedure->gpuCodeFragmentMainProcedureName, gpuCodeAndProcedureHandles.gpuCodeFragment, inlineProcedure->state, inlineProcedure->stateExtension, 0, 0, &gpuCodeAndProcedureHandles.procedure, outStatuses, optionalFile, optionalLine, optionalUserData);
       if (gpuCodeAndProcedureHandles.procedure == 0) {
+        redDestroyGpuCode(inlineProcedure->context, inlineProcedure->gpu, gpuCodeAndProcedureHandles.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
+        if (gpuCodeAndProcedureHandles.gpuCodeFragment != 0) {
+          redDestroyGpuCode(inlineProcedure->context, inlineProcedure->gpu, gpuCodeAndProcedureHandles.gpuCodeFragment, optionalFile, optionalLine, optionalUserData);
+        }
         errorCode = -4;
         goto errorExit;
       }
@@ -149,6 +154,7 @@ REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedureCompute(RedHandleCalls 
       }
       redCreateProcedureCompute(inlineProcedure->context, inlineProcedure->gpu, inlineProcedure->handleName, 0, inlineProcedure->procedureParameters, inlineProcedure->gpuCodeMainProcedureName, gpuCodeAndProcedureHandles.gpuCode, &gpuCodeAndProcedureHandles.procedure, outStatuses, optionalFile, optionalLine, optionalUserData);
       if (gpuCodeAndProcedureHandles.procedure == 0) {
+        redDestroyGpuCode(inlineProcedure->context, inlineProcedure->gpu, gpuCodeAndProcedureHandles.gpuCode, optionalFile, optionalLine, optionalUserData);
         errorCode = -3;
         goto errorExit;
       }

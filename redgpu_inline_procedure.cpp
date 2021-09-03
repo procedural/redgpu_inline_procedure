@@ -79,13 +79,13 @@ errorExit:;
       outStatuses->statusErrorFile        = optionalFile;
       outStatuses->statusErrorLine        = optionalLine;
       if (errorCode == -1) {
-        char desc[512] = "[redCallSetInlineProcedure] redCreateGpuCode() vertex fail.";
+        char desc[512] = "[redCreateInlineProcedurePrecompile] redCreateGpuCode() vertex fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       } else if (errorCode == -2) {
-        char desc[512] = "[redCallSetInlineProcedure] redCreateGpuCode() fragment fail.";
+        char desc[512] = "[redCreateInlineProcedurePrecompile] redCreateGpuCode() fragment fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       } else if (errorCode == -3) {
-        char desc[512] = "[redCallSetInlineProcedure] redCreateProcedure() fail.";
+        char desc[512] = "[redCreateInlineProcedurePrecompile] redCreateProcedure() fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       }
     }
@@ -130,10 +130,10 @@ errorExit:;
       outStatuses->statusErrorFile        = optionalFile;
       outStatuses->statusErrorLine        = optionalLine;
       if (errorCode == -1) {
-        char desc[512] = "[redCallSetInlineProcedureCompute] redCreateGpuCode() fail.";
+        char desc[512] = "[redCreateInlineProcedurePrecompileCompute] redCreateGpuCode() fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       } else if (errorCode == -2) {
-        char desc[512] = "[redCallSetInlineProcedureCompute] redCreateProcedure() fail.";
+        char desc[512] = "[redCreateInlineProcedurePrecompileCompute] redCreateProcedure() fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       }
     }

@@ -242,7 +242,7 @@ errorExit:;
         char desc[512] = "[redCallSetInlineProcedure] redCreateProcedure() fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       } else if (errorCode == -5) {
-        char desc[512] = "[redCallSetInlineProcedure] inlineProcedurePrecompileKey procedure is not valid.";
+        char desc[512] = "[redCallSetInlineProcedure] inlineProcedurePrecompileKey procedure handle is not valid.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       }
     }
@@ -336,7 +336,7 @@ errorExit:;
         char desc[512] = "[redCallSetInlineProcedureCompute] redCreateProcedure() fail.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       } else if (errorCode == -4) {
-        char desc[512] = "[redCallSetInlineProcedureCompute] inlineProcedurePrecompileKey procedure is not valid.";
+        char desc[512] = "[redCallSetInlineProcedureCompute] inlineProcedurePrecompileKey procedure handle is not valid.";
         memcpy(outStatuses->statusErrorDescription, desc, 512);
       }
     }

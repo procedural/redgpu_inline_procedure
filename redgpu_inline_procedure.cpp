@@ -25,12 +25,34 @@ typedef struct RedInlineProcedureGlobalMapComputeProcedures {
   std::map<uint64_t, RedInlineGpuCodeAndProcedureComputeHandles> procedures;
 } RedInlineProcedureGlobalMapComputeProcedures;
 
+std::map<std::string, RedHandleOutputDeclaration>                        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations;
+std::map<std::string, RedHandleProcedureParameters>                      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters;
 std::map<std::string, RedInlineGpuCodeAndProcedureHandles>               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles;
 std::map<std::string, RedInlineGpuCodeAndProcedureComputeHandles>        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute;
 std::mutex                                                               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesMutex;
 std::map<RedHandleCalls, RedInlineProcedureGlobalMapProcedures *>        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlines;
 std::mutex                                                               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesComputeMutex;
 std::map<RedHandleCalls, RedInlineProcedureGlobalMapComputeProcedures *> __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesCompute;
+
+REDGPU_DECLSPEC RedHandleOutputDeclaration REDGPU_API redInlineProcedureMapGetOutputDeclaration(const char * key) {
+  std::string k = key;
+  return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k];
+}
+
+REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters(const char * key) {
+  std::string k = key;
+  return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k];
+}
+
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration(const char * key, RedHandleOutputDeclaration outputDeclaration) {
+  std::string k = key;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k] = outputDeclaration;
+}
+
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters(const char * key, RedHandleProcedureParameters procedureParameters) {
+  std::string k = key;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k] = procedureParameters;
+}
 
 REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile(RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData) {
   int errorCode = 0;

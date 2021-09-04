@@ -36,6 +36,12 @@ typedef struct RedInlineProcedureCompute {
   const void *                 gpuCodeIr;
 } RedInlineProcedureCompute;
 
+REDGPU_DECLSPEC RedHandleOutputDeclaration   REDGPU_API redInlineProcedureMapGetOutputDeclaration   (const char * key);
+REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters (const char * key);
+
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration    (const char * key, RedHandleOutputDeclaration outputDeclaration);
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters  (const char * key, RedHandleProcedureParameters procedureParameters);
+
 REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile           (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
 REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompileCompute    (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedureCompute * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
 

@@ -381,7 +381,7 @@ REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(Red
         redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
       }
       delete procedures;
-      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlines[calls] = 0;
+      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlines.erase(calls);
     }
   }
   {
@@ -393,7 +393,7 @@ REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(Red
         redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
       }
       delete procedures;
-      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesCompute[calls] = 0;
+      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesCompute.erase(calls);
     }
   }
 }

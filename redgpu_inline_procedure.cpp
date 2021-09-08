@@ -410,4 +410,6 @@ REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedurePrecompiles(RedConte
     redDestroyGpuCode(context, gpu, pair.second.gpuCode, optionalFile, optionalLine, optionalUserData);
     redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
   }
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles        = {};
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute = {};
 }

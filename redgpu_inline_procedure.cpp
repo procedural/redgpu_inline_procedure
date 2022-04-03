@@ -504,7 +504,7 @@ REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedureMapGreenStructDeclar
       continue;    
     }
     redDestroyStructDeclaration(v->context, v->gpu, v->structDeclaration, optionalFile, optionalLine, optionalUserData);
-    delete[] v;
+    delete v;
   }
   __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations = {};
 }

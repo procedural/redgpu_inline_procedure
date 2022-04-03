@@ -2,9 +2,11 @@
 
 #ifdef _WIN32
 #include "C:/RedGpuSDK/redgpu.h"
+#include "C:/github/procedural/redgpu_green_struct/redgpu_green_struct.h"
 #endif
 #ifdef __linux__
 #include "/opt/RedGpuSDK/redgpu.h"
+#include "/opt/github/procedural/redgpu_green_struct/redgpu_green_struct.h"
 #endif
 
 #ifdef __cplusplus
@@ -36,20 +38,22 @@ typedef struct RedInlineProcedureCompute {
   const void *                 gpuCodeIr;
 } RedInlineProcedureCompute;
 
-REDGPU_DECLSPEC RedHandleOutputDeclaration   REDGPU_API redInlineProcedureMapGetOutputDeclaration   (const char * key);
-REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters (const char * key);
+REDGPU_DECLSPEC RedHandleOutputDeclaration   REDGPU_API redInlineProcedureMapGetOutputDeclaration      (const char * key);
+REDGPU_DECLSPEC void                         REDGPU_API redInlineProcedureMapGetGreenStructDeclaration (const char * key, GreenStructDeclaration * outGreenStructDeclaration);
+REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters    (const char * key);
 
-REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration    (const char * key, RedHandleOutputDeclaration outputDeclaration);
-REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters  (const char * key, RedHandleProcedureParameters procedureParameters);
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration      (const char * key, RedHandleOutputDeclaration outputDeclaration);
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetGreenStructDeclaration (const char * key, const GreenStructDeclaration * greenStructDeclaration);
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters    (const char * key, RedHandleProcedureParameters procedureParameters);
 
-REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile           (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
-REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompileCompute    (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedureCompute * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile             (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompileCompute      (RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedureCompute * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
 
-REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedure                    (RedHandleCalls calls, RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileKey, uint64_t inlineProcedureUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
-REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedureCompute             (RedHandleCalls calls, RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileKey, uint64_t inlineProcedureUniqueKey, const RedInlineProcedureCompute * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedure                      (RedHandleCalls calls, RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileKey, uint64_t inlineProcedureUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedureCompute               (RedHandleCalls calls, RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileKey, uint64_t inlineProcedureUniqueKey, const RedInlineProcedureCompute * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData);
 
-REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures (RedContext context, RedHandleGpu gpu, RedHandleCalls calls, const char * optionalFile, int optionalLine, void * optionalUserData);
-REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedurePrecompiles      (RedContext context, RedHandleGpu gpu, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures   (RedContext context, RedHandleGpu gpu, RedHandleCalls calls, const char * optionalFile, int optionalLine, void * optionalUserData);
+REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedurePrecompiles        (RedContext context, RedHandleGpu gpu, const char * optionalFile, int optionalLine, void * optionalUserData);
 
 #ifdef __cplusplus
 }

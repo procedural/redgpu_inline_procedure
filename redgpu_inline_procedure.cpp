@@ -26,6 +26,7 @@ typedef struct RedInlineProcedureGlobalMapComputeProcedures {
 } RedInlineProcedureGlobalMapComputeProcedures;
 
 std::map<std::string, RedHandleOutputDeclaration>                        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations;
+std::map<std::string, GreenStructDeclaration>                            __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations;
 std::map<std::string, RedHandleProcedureParameters>                      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters;
 std::map<std::string, RedInlineGpuCodeAndProcedureHandles>               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles;
 std::map<std::string, RedInlineGpuCodeAndProcedureComputeHandles>        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute;
@@ -39,6 +40,11 @@ REDGPU_DECLSPEC RedHandleOutputDeclaration REDGPU_API redInlineProcedureMapGetOu
   return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k];
 }
 
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapGetGreenStructDeclaration(const char * key, GreenStructDeclaration * outGreenStructDeclaration) {
+  std::string k = key;
+  outGreenStructDeclaration[0] = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k];
+}
+
 REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters(const char * key) {
   std::string k = key;
   return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k];
@@ -47,6 +53,11 @@ REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGet
 REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration(const char * key, RedHandleOutputDeclaration outputDeclaration) {
   std::string k = key;
   __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k] = outputDeclaration;
+}
+
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetGreenStructDeclaration(const char * key, const GreenStructDeclaration * greenStructDeclaration) {
+  std::string k = key;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k] = greenStructDeclaration[0];
 }
 
 REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters(const char * key, RedHandleProcedureParameters procedureParameters) {

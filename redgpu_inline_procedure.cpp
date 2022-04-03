@@ -12,14 +12,14 @@ typedef struct RedInlineGpuCodeAndProcedureHandles {
   RedHandleProcedure procedure;
 } RedInlineGpuCodeAndProcedureHandles;
 
-typedef struct RedInlineProcedureGlobalMapProcedures {
-  std::map<uint64_t, RedInlineGpuCodeAndProcedureHandles> procedures;
-} RedInlineProcedureGlobalMapProcedures;
-
 typedef struct RedInlineGpuCodeAndProcedureComputeHandles {
   RedHandleGpuCode   gpuCode;
   RedHandleProcedure procedure;
 } RedInlineGpuCodeAndProcedureComputeHandles;
+
+typedef struct RedInlineProcedureGlobalMapProcedures {
+  std::map<uint64_t, RedInlineGpuCodeAndProcedureHandles> procedures;
+} RedInlineProcedureGlobalMapProcedures;
 
 typedef struct RedInlineProcedureGlobalMapComputeProcedures {
   std::map<uint64_t, RedInlineGpuCodeAndProcedureComputeHandles> procedures;

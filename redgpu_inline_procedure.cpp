@@ -1,18 +1,38 @@
 #include "redgpu_inline_procedure.h"
 
 #include <string.h> // For memcpy
+#include <vector>
 #include <string>
 #include <mutex>
 #include <map>
 #include <new>
 
+typedef struct RedInlineContextGpuHandle {
+  RedContext   context;
+  RedHandleGpu gpu;
+  void *       handle;
+} RedInlineContextGpuHandle;
+
+typedef struct RedInlineGreenStructDeclaration {
+  RedContext                                     context;
+  RedHandleGpu                                   gpu;
+  std::vector<RedStructDeclarationMember>        structDeclarationMembers;
+  std::vector<RedStructDeclarationMemberArrayRO> structDeclarationMembersArrayRO;
+  RedBool32                                      procedureParametersHandlesDeclaration;
+  RedHandleStructDeclaration                     structDeclaration;
+} RedInlineGreenStructDeclaration;
+
 typedef struct RedInlineGpuCodeAndProcedureHandles {
+  RedContext         context;
+  RedHandleGpu       gpu;
   RedHandleGpuCode   gpuCodeVertex;
   RedHandleGpuCode   gpuCodeFragment;
   RedHandleProcedure procedure;
 } RedInlineGpuCodeAndProcedureHandles;
 
 typedef struct RedInlineGpuCodeAndProcedureComputeHandles {
+  RedContext         context;
+  RedHandleGpu       gpu;
   RedHandleGpuCode   gpuCode;
   RedHandleProcedure procedure;
 } RedInlineGpuCodeAndProcedureComputeHandles;
@@ -25,9 +45,9 @@ typedef struct RedInlineProcedureGlobalMapComputeProcedures {
   std::map<uint64_t, RedInlineGpuCodeAndProcedureComputeHandles> procedures;
 } RedInlineProcedureGlobalMapComputeProcedures;
 
-std::map<std::string, RedHandleOutputDeclaration>                        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations;
-std::map<std::string, GreenStructDeclaration>                            __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations;
-std::map<std::string, RedHandleProcedureParameters>                      __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters;
+std::map<std::string, RedInlineContextGpuHandle>                         __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations;
+std::map<std::string, RedInlineGreenStructDeclaration *>                 __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations;
+std::map<std::string, RedInlineContextGpuHandle>                         __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters;
 std::map<std::string, RedInlineGpuCodeAndProcedureHandles>               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles;
 std::map<std::string, RedInlineGpuCodeAndProcedureComputeHandles>        __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute;
 std::mutex                                                               __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesMutex;
@@ -37,32 +57,69 @@ std::map<RedHandleCalls, RedInlineProcedureGlobalMapComputeProcedures *> __REDGP
 
 REDGPU_DECLSPEC RedHandleOutputDeclaration REDGPU_API redInlineProcedureMapGetOutputDeclaration(const char * key) {
   std::string k = key;
-  return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k];
+  return (RedHandleOutputDeclaration)__REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k].handle;
 }
 
 REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapGetGreenStructDeclaration(const char * key, GreenStructDeclaration * outGreenStructDeclaration) {
   std::string k = key;
-  outGreenStructDeclaration[0] = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k];
+  RedInlineGreenStructDeclaration * v = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k];
+  if (v == 0) {
+    GreenStructDeclaration empty = {};
+    outGreenStructDeclaration[0] = empty;
+    return;
+  }
+  outGreenStructDeclaration->structDeclarationMembersCount         = (unsigned)v->structDeclarationMembers.size();
+  outGreenStructDeclaration->structDeclarationMembers              = v->structDeclarationMembers.data();
+  outGreenStructDeclaration->structDeclarationMembersArrayROCount  = (unsigned)v->structDeclarationMembersArrayRO.size();
+  outGreenStructDeclaration->structDeclarationMembersArrayRO       = v->structDeclarationMembersArrayRO.data();
+  outGreenStructDeclaration->procedureParametersHandlesDeclaration = v->procedureParametersHandlesDeclaration;
+  outGreenStructDeclaration->structDeclaration                     = v->structDeclaration;
 }
 
 REDGPU_DECLSPEC RedHandleProcedureParameters REDGPU_API redInlineProcedureMapGetProcedureParameters(const char * key) {
   std::string k = key;
-  return __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k];
+  return (RedHandleProcedureParameters)__REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k].handle;
 }
 
-REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration(const char * key, RedHandleOutputDeclaration outputDeclaration) {
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetOutputDeclaration(const char * key, RedContext context, RedHandleGpu gpu, RedHandleOutputDeclaration outputDeclaration) {
   std::string k = key;
-  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k] = outputDeclaration;
+  RedInlineContextGpuHandle v = {};
+  v.context = context;
+  v.gpu     = gpu;
+  v.handle  = (void *)outputDeclaration;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations[k] = v;
 }
 
-REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetGreenStructDeclaration(const char * key, const GreenStructDeclaration * greenStructDeclaration) {
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetGreenStructDeclaration(const char * key, RedContext context, RedHandleGpu gpu, const GreenStructDeclaration * greenStructDeclaration) {
   std::string k = key;
-  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k] = greenStructDeclaration[0];
+  RedInlineGreenStructDeclaration * v = new(std::nothrow) RedInlineGreenStructDeclaration();
+  if (v == 0) {
+    return;
+  }
+  v->context = context;
+  v->gpu     = gpu;
+  v->structDeclarationMembers.resize(greenStructDeclaration->structDeclarationMembersCount);
+  for (unsigned i = 0; i < greenStructDeclaration->structDeclarationMembersCount; i += 1) {
+    v->structDeclarationMembers[i] = greenStructDeclaration->structDeclarationMembers[i];
+    // NOTE(Constantine): Not copying RedStructDeclarationMember::inlineSampler for now.
+    v->structDeclarationMembers[i].inlineSampler = 0;
+  }
+  v->structDeclarationMembersArrayRO.resize(greenStructDeclaration->structDeclarationMembersArrayROCount);
+  for (unsigned i = 0; i < greenStructDeclaration->structDeclarationMembersArrayROCount; i += 1) {
+    v->structDeclarationMembersArrayRO[i] = greenStructDeclaration->structDeclarationMembersArrayRO[i];
+  }
+  v->procedureParametersHandlesDeclaration = greenStructDeclaration->procedureParametersHandlesDeclaration;
+  v->structDeclaration                     = greenStructDeclaration->structDeclaration;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations[k] = v;
 }
 
-REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters(const char * key, RedHandleProcedureParameters procedureParameters) {
+REDGPU_DECLSPEC void REDGPU_API redInlineProcedureMapSetProcedureParameters(const char * key, RedContext context, RedHandleGpu gpu, RedHandleProcedureParameters procedureParameters) {
   std::string k = key;
-  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k] = procedureParameters;
+  RedInlineContextGpuHandle v = {};
+  v.context = context;
+  v.gpu     = gpu;
+  v.handle  = (void *)procedureParameters;
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters[k] = v;
 }
 
 REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile(RedContext context, RedHandleGpu gpu, const char * inlineProcedurePrecompileUniqueKey, const RedInlineProcedure * inlineProcedure, RedStatuses * outStatuses, const char * optionalFile, int optionalLine, void * optionalUserData) {
@@ -71,6 +128,8 @@ REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompile(RedContext co
   std::string precompileKey = inlineProcedurePrecompileUniqueKey;
   RedInlineGpuCodeAndProcedureHandles gpuCodeAndProcedureHandles = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles[precompileKey];
   if (gpuCodeAndProcedureHandles.procedure == 0) {
+    gpuCodeAndProcedureHandles.context = context;
+    gpuCodeAndProcedureHandles.gpu     = gpu;
     // NOTE(Constantine):
     // Not found, create and assign gpu code and procedure handles then.
     redCreateGpuCode(context, gpu, inlineProcedure->gpuCodeVertexHandleName, inlineProcedure->gpuCodeVertexIrBytesCount, inlineProcedure->gpuCodeVertexIr, &gpuCodeAndProcedureHandles.gpuCodeVertex, outStatuses, optionalFile, optionalLine, optionalUserData);
@@ -134,6 +193,8 @@ REDGPU_DECLSPEC void REDGPU_API redCreateInlineProcedurePrecompileCompute(RedCon
   std::string precompileKey = inlineProcedurePrecompileUniqueKey;
   RedInlineGpuCodeAndProcedureComputeHandles gpuCodeAndProcedureHandles = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute[precompileKey];
   if (gpuCodeAndProcedureHandles.procedure == 0) {
+    gpuCodeAndProcedureHandles.context = context;
+    gpuCodeAndProcedureHandles.gpu     = gpu;
     // NOTE(Constantine):
     // Not found, create and assign gpu code and procedure handles then.
     redCreateGpuCode(context, gpu, inlineProcedure->gpuCodeHandleName, inlineProcedure->gpuCodeIrBytesCount, inlineProcedure->gpuCodeIr, &gpuCodeAndProcedureHandles.gpuCode, outStatuses, optionalFile, optionalLine, optionalUserData);
@@ -212,6 +273,8 @@ REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedure(RedHandleCalls calls, 
   {
     RedInlineGpuCodeAndProcedureHandles gpuCodeAndProcedureHandles = procedures->procedures[inlineProcedureUniqueKey];
     if (gpuCodeAndProcedureHandles.procedure == 0) {
+      gpuCodeAndProcedureHandles.context = context;
+      gpuCodeAndProcedureHandles.gpu     = gpu;
       // NOTE(Constantine):
       // Not found, create and assign gpu code and procedure handles then.
       redCreateGpuCode(context, gpu, inlineProcedure->gpuCodeVertexHandleName, inlineProcedure->gpuCodeVertexIrBytesCount, inlineProcedure->gpuCodeVertexIr, &gpuCodeAndProcedureHandles.gpuCodeVertex, outStatuses, optionalFile, optionalLine, optionalUserData);
@@ -321,6 +384,8 @@ REDGPU_DECLSPEC void REDGPU_API redCallSetInlineProcedureCompute(RedHandleCalls 
   {
     RedInlineGpuCodeAndProcedureComputeHandles gpuCodeAndProcedureHandles = procedures->procedures[inlineProcedureUniqueKey];
     if (gpuCodeAndProcedureHandles.procedure == 0) {
+      gpuCodeAndProcedureHandles.context = context;
+      gpuCodeAndProcedureHandles.gpu     = gpu;
       // NOTE(Constantine):
       // Not found, create and assign gpu code and procedure handles then.
       redCreateGpuCode(context, gpu, inlineProcedure->gpuCodeHandleName, inlineProcedure->gpuCodeIrBytesCount, inlineProcedure->gpuCodeIr, &gpuCodeAndProcedureHandles.gpuCode, outStatuses, optionalFile, optionalLine, optionalUserData);
@@ -379,17 +444,17 @@ exit:;
 
 }
 
-REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(RedContext context, RedHandleGpu gpu, RedHandleCalls calls, const char * optionalFile, int optionalLine, void * optionalUserData) {
+REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(RedHandleCalls calls, const char * optionalFile, int optionalLine, void * optionalUserData) {
   {
     std::lock_guard<std::mutex> __mapMutexScope(__REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesMutex);
     RedInlineProcedureGlobalMapProcedures * procedures = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlines[calls];
     if (procedures != 0) {
       for (auto & pair : procedures->procedures) {
-        redDestroyGpuCode(context, gpu, pair.second.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
+        redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
         if (pair.second.gpuCodeFragment != 0) {
-          redDestroyGpuCode(context, gpu, pair.second.gpuCodeFragment, optionalFile, optionalLine, optionalUserData);
+          redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCodeFragment, optionalFile, optionalLine, optionalUserData);
         }
-        redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
+        redDestroyProcedure(pair.second.context, pair.second.gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
       }
       delete procedures;
       __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlines.erase(calls);
@@ -400,8 +465,8 @@ REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(Red
     RedInlineProcedureGlobalMapComputeProcedures * procedures = __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesCompute[calls];
     if (procedures != 0) {
       for (auto & pair : procedures->procedures) {
-        redDestroyGpuCode(context, gpu, pair.second.gpuCode, optionalFile, optionalLine, optionalUserData);
-        redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
+        redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCode, optionalFile, optionalLine, optionalUserData);
+        redDestroyProcedure(pair.second.context, pair.second.gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
       }
       delete procedures;
       __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapInlinesCompute.erase(calls);
@@ -409,18 +474,45 @@ REDGPU_DECLSPEC void REDGPU_API redBeforeDestroyCallsDestroyInlineProcedures(Red
   }
 }
 
-REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedurePrecompiles(RedContext context, RedHandleGpu gpu, const char * optionalFile, int optionalLine, void * optionalUserData) {
+REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedurePrecompiles(const char * optionalFile, int optionalLine, void * optionalUserData) {
   for (auto & pair : __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles) {
-    redDestroyGpuCode(context, gpu, pair.second.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
+    redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCodeVertex, optionalFile, optionalLine, optionalUserData);
     if (pair.second.gpuCodeFragment != 0) {
-      redDestroyGpuCode(context, gpu, pair.second.gpuCodeFragment, optionalFile, optionalLine, optionalUserData);
+      redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCodeFragment, optionalFile, optionalLine, optionalUserData);
     }
-    redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
+    redDestroyProcedure(pair.second.context, pair.second.gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
   }
   for (auto & pair : __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute) {
-    redDestroyGpuCode(context, gpu, pair.second.gpuCode, optionalFile, optionalLine, optionalUserData);
-    redDestroyProcedure(context, gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
+    redDestroyGpuCode(pair.second.context, pair.second.gpu, pair.second.gpuCode, optionalFile, optionalLine, optionalUserData);
+    redDestroyProcedure(pair.second.context, pair.second.gpu, pair.second.procedure, optionalFile, optionalLine, optionalUserData);
   }
   __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompiles        = {};
   __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapPrecompilesCompute = {};
 }
+
+REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedureMapOutputDeclaration(const char * optionalFile, int optionalLine, void * optionalUserData) {
+  for (auto & pair : __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations) {
+    redDestroyOutputDeclaration(pair.second.context, pair.second.gpu, (RedHandleOutputDeclaration)pair.second.handle, optionalFile, optionalLine, optionalUserData);
+  }
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapOutputDeclarations = {};
+}
+
+REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedureMapGreenStructDeclaration(const char * optionalFile, int optionalLine, void * optionalUserData) {
+  for (auto & pair : __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations) {
+    RedInlineGreenStructDeclaration * v = pair.second;    
+    if (v == 0) {
+      continue;    
+    }
+    redDestroyStructDeclaration(v->context, v->gpu, v->structDeclaration, optionalFile, optionalLine, optionalUserData);
+    delete[] v;
+  }
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapGreenStructDeclarations = {};
+}
+
+REDGPU_DECLSPEC void REDGPU_API redDestroyAllInlineProcedureMapProcedureParameters(const char * optionalFile, int optionalLine, void * optionalUserData) {
+  for (auto & pair : __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters) {
+    redDestroyProcedureParameters(pair.second.context, pair.second.gpu, (RedHandleProcedureParameters)pair.second.handle, optionalFile, optionalLine, optionalUserData);
+  }
+  __REDGPU_INLINE_PROCEDURE_GLOBAL_1fab7553629232e5a6048b43192363843eb878d8_mapProcedureParameters = {};
+}
+
